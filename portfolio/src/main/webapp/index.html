@@ -1,18 +1,64 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8">
-    <title>My Portfolio</title>
+    <meta charset="utf-8">
+    <title>Aidan Molloy</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <script src="script.js"></script>
   </head>
   <body>
-    <div id="content">
-      <h1>My Portfolio</h1>
-      <p>This is my portfolio.</p>
-      <p>Click here to get a random message:</p>
-      <button onclick="addRandomGreeting()">Hello</button>
-      <div id="greeting-container"></div>
-    </div>
+    <header>
+      <div class="container">
+        <div id="headerImg">
+          <img src="images/aidan.jpg" alt="Aidan's Profile Picture" height="200">
+        </div>
+        <div id="headerContent">
+          <h1>Aidan Molloy</h1>
+          <p>Computer Science @ UCC</p>
+          <p>STEP Intern @ Google</p>
+        </div>
+      </div>
+    </header>
+    <nav>
+      <div class="container">
+        <button class="navitem" onclick="openContent(event, 'Home')" id="defaultOpen">Home</button>
+        <button class="navitem" onclick="openContent(event, 'Experience')">Experience</button>
+        <button class="navitem" onclick="openContent(event, 'Achievements')">Achievements</button>
+        <button class="navitem" onclick="openContent(event, 'Portfolio')">Portfolio</button>
+        <button class="navitem" onclick="openContent(event, 'Contact')">Contact</button>
+      </div>
+    </nav>
+    <main class="container">
+      <div id="Home" class="content">
+        <h3>Home</h3>
+        <p>My name is Aidan and Welcome!</p>
+      </div>
+
+      <div id="Experience" class="content">
+        <h3>Experience</h3>
+        <p>I have had a few jobs.</p>
+      </div>
+
+      <div id="Achievements" class="content">
+        <h3>Achievements</h3>
+        <p>I have won some things!</p>
+      </div>
+
+      <div id="Portfolio" class="content">
+        <h3>Portfolio</h3>
+        <p>I have made a few things.</p>
+      </div>
+
+      <div id="Contact" class="content">
+        <h3>Contact</h3>
+        <p>You can contact me.</p>
+      </div>
+    </main>
+    
+    <!-- Load Home Content -->
+    <script>
+      document.getElementById("defaultOpen").click();
+    </script>
   </body>
 </html>

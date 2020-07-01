@@ -13,16 +13,22 @@
 // limitations under the License.
 
 /**
- * Adds a random greeting to the page.
+ * Opens the selected content.
  */
-function addRandomGreeting() {
-  const greetings =
-      ['Hello world!', '¡Hola Mundo!', '你好，世界！', 'Bonjour le monde!'];
 
-  // Pick a random greeting.
-  const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+function openContent(evt, page) {
+  let i, content, navitem;
 
-  // Add it to the page.
-  const greetingContainer = document.getElementById('greeting-container');
-  greetingContainer.innerText = greeting;
+  content = document.getElementsByClassName("content");
+  for (i = 0; i < content.length; i++) {
+    content[i].style.display = "none";
+  }
+
+  navitem = document.getElementsByClassName("navitem");
+  for (i = 0; i < navitem.length; i++) {
+    navitem[i].className = navitem[i].className.replace(" active", "");
+  }
+
+  document.getElementById(page).style.display = "block";
+  evt.currentTarget.className += " active";
 }
