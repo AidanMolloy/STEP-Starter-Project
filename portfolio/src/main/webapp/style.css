@@ -74,6 +74,15 @@ nav button.active {
     animation: slideIn 0.5s;
 }
 
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.galleryItem {
+    padding: 25px;
+}
+
 /* Animations */
 @keyframes slideIn {
     from {left: -1000px;}
