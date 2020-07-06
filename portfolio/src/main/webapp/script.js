@@ -31,4 +31,20 @@ function openContent(evt, page) {
 
   document.getElementById(page).style.display = "block";
   evt.currentTarget.className += " active";
+
+  if(page == "about"){
+    let headerElement = document.getElementById("headerSection");
+    headerElement.classList.remove("minimise");
+    headerElement.classList.add("maximise");
+    let footerElement = document.getElementById("footerSection");
+    footerElement.classList.add("maximiseFooter");
+    footerElement.classList.remove("minimiseFooter");
+  }else{
+    let headerElement = document.getElementById("headerSection");
+    headerElement.classList.add("minimise");
+    headerElement.classList.remove("maximise");
+    let footerElement = document.getElementById("footerSection");
+    footerElement.classList.remove("maximiseFooter");
+    footerElement.classList.add("minimiseFooter");
+  }
 }

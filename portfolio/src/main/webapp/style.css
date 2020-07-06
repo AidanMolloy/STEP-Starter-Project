@@ -36,10 +36,41 @@ header {
 
 #headerImg img{
     border-radius: 50%;
+    width: 200px;
 }
 
 #headerContent {
     padding-left: 50px;
+}
+
+.minimise img {
+  transition: 0.5s linear all;
+  width: 100px !important;
+}
+
+.maximise img {
+  transition: 0.5s linear all;
+  width: 200px !important;
+}
+
+.minimise h1 {
+  transition: 0.5s linear all;
+  font-size: 18px;
+}
+
+.maximise h1 {
+  transition: 0.5s linear all;
+  font-size: 32px;
+}
+
+.minimise p {
+  transition: 0.5s linear all;
+  font-size: 12px;
+}
+
+.maximise p {
+  transition: 0.5s linear all;
+  font-size: 16px;
 }
 
 /* Nav */
@@ -57,6 +88,7 @@ nav button {
     cursor: pointer;
     padding: 14px 16px;
     transition: 0.3s;
+    font-weight: bold;
 }
 
 nav button:hover {
@@ -125,19 +157,33 @@ main {
 
 /* Footer */
 footer {
+  transition: 0.5s linear all;
   position: fixed;
   bottom: 0;
   background-color: var(--main-color);
-  height: 100px;
   width: 100%;
   margin-top: 30px;
   text-align: center;
-  padding: 30px;
+  padding: 15px;
+}
+
+.minimiseFooter img{
+  transition: 0.5s linear all;
+  width: 40px;
+
+}
+
+.maximiseFooter img{
+  transition: 0.5s linear all;
+  width: 70px;
 }
 
 .social img {
-  width: 50px;
-  padding: 10px;
+  padding: 8px;
+}
+
+.social img:hover {
+  transform: scale(1.2);
 }
 
 /* Animations */
