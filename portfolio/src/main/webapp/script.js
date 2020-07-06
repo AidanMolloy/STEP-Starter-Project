@@ -48,3 +48,34 @@ function openContent(evt, page) {
     footerElement.classList.add("minimiseFooter");
   }
 }
+
+/**
+ * Fetches a my name from the server and adds it to the DOM.
+ */
+function getName() {
+  // The fetch() function returns a Promise because the request is asynchronous.
+  const responsePromise = fetch('/data');
+
+  // When the request is complete, pass the response into handleResponse().
+  responsePromise.then(handleResponse);
+}
+
+/**
+ * Handles response by converting it to text and passing the result to
+ * addNameToDOM().
+ */
+function handleResponse(response) {
+  // response.text() returns a Promise, because the response is a stream of
+  // content and not a simple variable.
+  const textPromise = response.text();
+
+  // When the response is converted to text, pass the result into the
+  // addNameToDOM() function.
+  textPromise.then(addNameToDOM);
+}
+
+/** Adds my name to the DOM. */
+function addNameToDOM(name) {
+  const nameContainer = document.getElementById('name-container');
+  nameContainer.innerText = name;
+}
