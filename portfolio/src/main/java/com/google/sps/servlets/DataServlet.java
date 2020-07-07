@@ -19,14 +19,48 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
+import java.util.*;
 
 /** Servlet that returns some example content. TODO: modify this file to handle comments data */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
+  private ArrayList<String> comments = new ArrayList<String>();
+
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("Aidan Molloy");
+    addComments(comments);
+    String json = convertToJson(comments);
+    response.setContentType("application/json;");
+    response.getWriter().println(json);
+  }
+
+  private void addComments(ArrayList comments) {
+    comments.add("Aidan M");
+    comments.add("Wow!");
+    comments.add("John D");
+    comments.add("Amazing!");
+    comments.add("Grace F");
+    comments.add("Interesting!");
+  }
+
+  private String convertToJson(ArrayList comments) {
+    String json = "{";
+    int j = 0;
+    for (int i = 0; i < comments.size(); i++) {
+      json += "\"author" + j + "\": ";
+      json += "\"" + comments.get(i) + "\"";
+      json += ", ";
+      i++;
+      json += "\"comment" + j + "\": ";
+      json += "\"" + comments.get(i) + "\"";
+      json += ", ";
+      j++;
+    }
+    json = json.substring(0, json.length()-2);
+    json += "}";
+
+    return json;
   }
 }

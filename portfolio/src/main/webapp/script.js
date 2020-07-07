@@ -47,35 +47,41 @@ function openContent(evt, page) {
     footerElement.classList.remove("maximiseFooter");
     footerElement.classList.add("minimiseFooter");
   }
+
+  if (page =="comments"){
+    getComments();
+  }
 }
 
-/**
- * Fetches a my name from the server and adds it to the DOM.
- */
-function getName() {
-  // The fetch() function returns a Promise because the request is asynchronous.
-  const responsePromise = fetch('/data');
+function getComments() {
+  fetch('/data').then(response => response.json()).then((comments) => {
+    // comment is an object, not a string, so we have to
+    // reference its fields to create HTML content
 
-  // When the request is complete, pass the response into handleResponse().
-  responsePromise.then(handleResponse);
+    const commentListElement = document.getElementById('comment-area');
+    commentListElement.innerHTML = '';
+    commentListElement.appendChild(
+        createListElement('Author: ' + comments.author0));
+    commentListElement.appendChild(
+        createListElement('Comment: ' + comments.comment0));
+    commentListElement.appendChild(
+        createListElement(" "));
+    commentListElement.appendChild(
+        createListElement('Author: ' + comments.author1));
+    commentListElement.appendChild(
+        createListElement('Comment: ' + comments.comment1));
+    commentListElement.appendChild(
+        createListElement(" "));
+    commentListElement.appendChild(
+        createListElement('Author: ' + comments.author2));
+    commentListElement.appendChild(
+        createListElement('Comment: ' + comments.comment2));
+  });
 }
 
-/**
- * Handles response by converting it to text and passing the result to
- * addNameToDOM().
- */
-function handleResponse(response) {
-  // response.text() returns a Promise, because the response is a stream of
-  // content and not a simple variable.
-  const textPromise = response.text();
-
-  // When the response is converted to text, pass the result into the
-  // addNameToDOM() function.
-  textPromise.then(addNameToDOM);
-}
-
-/** Adds my name to the DOM. */
-function addNameToDOM(name) {
-  const nameContainer = document.getElementById('name-container');
-  nameContainer.innerText = name;
+/** Creates an <li> element containing text. */
+function createListElement(text) {
+  const liElement = document.createElement('li');
+  liElement.innerText = text;
+  return liElement;
 }
