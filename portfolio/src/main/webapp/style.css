@@ -21,6 +21,18 @@ body {
   }
 }
 
+textarea {
+  resize: none;
+}
+
+table {
+  margin-top: 25px;
+}
+
+td, tr {
+  padding: 10px;
+}
+
 /* Header */
 header {
     background-color: var(--main-color);
