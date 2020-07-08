@@ -13,15 +13,16 @@
 // limitations under the License.
 
 
-// Function that opens the selected content.
+// Displays selected content
 function openContent(evt, page) {
   let i;
 
   // Set all the pages display to none
-  const content = document.getElementsByClassName("content");
-  for (i = 0; i < content.length; i++) {
-    content[i].style.display = "none";
-  }
+  Array.from(document.getElementsByClassName("content")).forEach(
+    function(page) {
+        page.style.display = "none";
+    }
+  );
 
   // Once a page is selected make it active and display it
   const navitem = document.getElementsByClassName("navitem");
@@ -55,7 +56,7 @@ function openContent(evt, page) {
   }
 }
 
-// Function to fetch comments from /data
+// Fetches data and adds the result to the DOM
 function getComments() {
   fetch('/data').then(response => response.json()).then((comments) => {
 
