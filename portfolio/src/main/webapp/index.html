@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <script src="script.js"></script>
   </head>
-  <body onload="getName()">
+  <body>
     <header id="headerSection">
       <div class="container">
         <div id="headerImg">
@@ -222,7 +222,17 @@
 
       <div id="comments" class="content">
         <h2>Comments</h2>
-        <p id="comment-area"></p>
+        <form action="/data" method="POST">
+
+          <label for="user-name">Name:</label><br>
+          <input type="text" id="user-name" name="user-name"><br>
+          <label for="comment">Comment:</label><br>
+          <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea>
+          <br>
+
+          <input type="submit" />
+        </form>
+        <table id="comment-table"></table>
       </div>
     </main>
     <footer id="footerSection">
