@@ -12,19 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Opens the selected content.
- */
 
+// Function that opens the selected content.
 function openContent(evt, page) {
-  let i, content, navitem;
+  let i;
 
-  content = document.getElementsByClassName("content");
+  // Set all the pages display to none
+  const content = document.getElementsByClassName("content");
   for (i = 0; i < content.length; i++) {
     content[i].style.display = "none";
   }
 
-  navitem = document.getElementsByClassName("navitem");
+  // Once a page is selected make it active and display it
+  const navitem = document.getElementsByClassName("navitem");
   for (i = 0; i < navitem.length; i++) {
     navitem[i].className = navitem[i].className.replace(" active", "");
   }
@@ -32,56 +32,50 @@ function openContent(evt, page) {
   document.getElementById(page).style.display = "block";
   evt.currentTarget.className += " active";
 
+  // Select the header and footer
+  const headerElement = document.getElementById("headerSection");
+  const footerElement = document.getElementById("footerSection");
+
+  // If on the about page make the header and footer large otherwise shrink them
   if(page == "about"){
-    let headerElement = document.getElementById("headerSection");
     headerElement.classList.remove("minimise");
     headerElement.classList.add("maximise");
-    let footerElement = document.getElementById("footerSection");
     footerElement.classList.add("maximiseFooter");
     footerElement.classList.remove("minimiseFooter");
   }else{
-    let headerElement = document.getElementById("headerSection");
     headerElement.classList.add("minimise");
     headerElement.classList.remove("maximise");
-    let footerElement = document.getElementById("footerSection");
     footerElement.classList.remove("maximiseFooter");
     footerElement.classList.add("minimiseFooter");
   }
 
-  if (page =="comments"){
+  // When comments page is selected load the comments
+  if (page == "comments"){
     getComments();
   }
 }
 
+// Function to fetch comments from /data
 function getComments() {
   fetch('/data').then(response => response.json()).then((comments) => {
-    // comment is an object, not a string, so we have to
-    // reference its fields to create HTML content
 
-    const commentListElement = document.getElementById('comment-area');
-    commentListElement.innerHTML = '';
-    commentListElement.appendChild(
-        createListElement('Author: ' + comments.author0));
-    commentListElement.appendChild(
-        createListElement('Comment: ' + comments.comment0));
-    commentListElement.appendChild(
-        createListElement(" "));
-    commentListElement.appendChild(
-        createListElement('Author: ' + comments.author1));
-    commentListElement.appendChild(
-        createListElement('Comment: ' + comments.comment1));
-    commentListElement.appendChild(
-        createListElement(" "));
-    commentListElement.appendChild(
-        createListElement('Author: ' + comments.author2));
-    commentListElement.appendChild(
-        createListElement('Comment: ' + comments.comment2));
+    // Select the table
+    const table = document.getElementById("comment-table");
+
+    // For each entry in the Comments select the id and the array
+    for (let [key, value] of Object.entries(comments)) {
+      // Create new row 
+      let row = table.insertRow(0);
+
+      // Create cells in the row
+      let cell1 = row.insertCell(0);
+      let cell2 = row.insertCell(1);
+      let cell3 = row.insertCell(2);
+
+      // Add some text to the new cells:
+      cell1.innerHTML = value[0];
+      cell2.innerHTML = value[1];
+      cell3.innerHTML = value[2];
+    }
   });
-}
-
-/** Creates an <li> element containing text. */
-function createListElement(text) {
-  const liElement = document.createElement('li');
-  liElement.innerText = text;
-  return liElement;
 }
