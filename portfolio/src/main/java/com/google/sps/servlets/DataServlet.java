@@ -51,7 +51,11 @@ public class DataServlet extends HttpServlet {
     response.sendRedirect("/index.html#comments");
   }
 
-  // Function to add a comment to the array
+  /**
+  * Creates duplicate Array with one extra index holding the new comment data.
+  * ArrayLists causing issues with Gson.
+  * TODO: Use ArrayLists instead of creating new Array for each comment.
+  */
   public static String[][] addComment(int arrayLength, String arr[][], String commentToBeAdded[])
   {
     int i;
