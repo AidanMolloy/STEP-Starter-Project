@@ -224,15 +224,21 @@
         <h2>Comments</h2>
         <form action="/data" method="POST">
 
-          <label for="user-name">Name:</label><br>
-          <input type="text" id="user-name" name="user-name"><br>
+          <label for="username">Name:</label><br>
+          <input type="text" id="username" name="username"><br>
           <label for="comment">Comment:</label><br>
           <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea>
           <br>
 
           <input type="submit" />
         </form>
-        <table id="comment-table"></table>
+        <table id="comment-table">
+          <tr>
+            <th>Username</th>
+            <th>Comment</th>
+            <th>Date</th>
+          </tr>
+        </table>
       </div>
     </main>
     <footer id="footerSection">

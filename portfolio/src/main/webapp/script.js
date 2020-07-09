@@ -58,25 +58,21 @@ function openContent(evt, page) {
 
 // Fetches data and adds the result to the DOM
 function getComments() {
-  fetch('/data').then(response => response.json()).then((comments) => {
 
+  fetch('/data').then(response => response.json()).then((comments) => {
     // Select the table
     const table = document.getElementById("comment-table");
 
-    // For each entry in the Comments select the id and the array
-    for (let [key, value] of Object.entries(comments)) {
-      // Create new row 
-      let row = table.insertRow(0);
+    // For every comment create a new row and fill cells with data
+    comments.forEach((comment) => {
+      let row = table.insertRow(1);
+      let usernameCell = row.insertCell(0);
+      let commentCell = row.insertCell(1);
+      let dateCell = row.insertCell(2);
 
-      // Create cells in the row
-      let cell1 = row.insertCell(0);
-      let cell2 = row.insertCell(1);
-      let cell3 = row.insertCell(2);
-
-      // Add some text to the new cells:
-      cell1.innerHTML = value[0];
-      cell2.innerHTML = value[1];
-      cell3.innerHTML = value[2];
-    }
+      usernameCell.innerHTML = comment.username;
+      commentCell.innerHTML = comment.comment;
+      dateCell.innerHTML = comment.currentDate;
+    })
   });
 }

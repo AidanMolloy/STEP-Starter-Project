@@ -14,64 +14,48 @@
 
 package com.google.sps.servlets;
 
+import com.google.sps.data.Comments;
+import com.google.gson.Gson;
 import java.io.IOException;
+import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.google.gson.Gson;
-import java.io.*; 
-import java.lang.*; 
-import java.util.*; 
-import java.time.format.DateTimeFormatter;  
-import java.time.LocalDateTime;  
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
-/** Servlet that returns comment data. */
+/** Servlet that handles comment data. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  // Create comments Array
-  public String[][] comments = { {"Aidan Molloy", "Love the website", "12:00 - 01/01/2020"} };
-
+  // Gets data from form and puts it in the datastore
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
-    String userName = getParameter(request, "user-name", "");
+    String username = getParameter(request, "username", "");
     String comment = getParameter(request, "comment", "");
+    Date currentDate = new Date();
 
-    // Get current date.
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm - dd/MM/yyyy");
-    LocalDateTime now = LocalDateTime.now();
+    // Create Entity for the comment data
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("username", username);
+    commentEntity.setProperty("comment", comment);
+    commentEntity.setProperty("date", currentDate);
 
-    // Add the new comment to Array.
-    String[] newComment = {userName, comment, dtf.format(now)};
-    comments = addComment(comments.length, comments, newComment);
+    // Enter the comment into the datastore
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
 
     // Redirect user once comment added TODO: Redirect to Comments tab.
     response.sendRedirect("/index.html#comments");
   }
-
-  /**
-  * Creates duplicate Array with one extra index holding the new comment data.
-  * ArrayLists causing issues with Gson.
-  * TODO: Use ArrayLists instead of creating new Array for each comment.
-  */
-  public static String[][] addComment(int arrayLength, String arr[][], String commentToBeAdded[])
-  {
-    int i;
-
-    // create a new array of size arrayLength+1
-    String newarr[][] = new String[arrayLength + 1][3];
-
-    // insert the elements from the old array into the new array
-    // insert all elements till arrayLength then insert the newComment at arrayLength+1
-    for (i = 0; i < arrayLength; i++)
-        newarr[i] = arr[i];
-
-    newarr[arrayLength] = commentToBeAdded;
-
-    return newarr;
-  } 
 
   // Get data from the form
   private String getParameter(HttpServletRequest request, String name, String defaultValue) {
@@ -85,6 +69,26 @@ public class DataServlet extends HttpServlet {
   // Print the comments data to /data
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    // Create query for Comments sorted by date
+    Query query = new Query("Comment").addSort("date", SortDirection.DESCENDING);
+
+    // Get all entities from datastore with that query
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+
+    // Convert data into List of Comments
+    List<Comments> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
+      String username = (String) entity.getProperty("username");
+      String comment = (String) entity.getProperty("comment");
+      Date date = (Date) entity.getProperty("date");
+
+      Comments commentResult = new Comments(id, username, comment, date);
+      comments.add(commentResult);
+    }
+
+    // Convert Comments into JSON and write to /data
     String json = convertToJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
@@ -92,7 +96,7 @@ public class DataServlet extends HttpServlet {
 
   
   // Converts comments into a JSON string using the Gson library.
-  private String convertToJson(String[][] comments) {
+  private String convertToJson(List<Comments> comments) {
     Gson gson = new Gson();
     String json = gson.toJson(comments);
     return json;
