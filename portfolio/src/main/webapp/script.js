@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Opens the selected content.
- */
 
+// Displays selected content
 function openContent(evt, page) {
-  let i, content, navitem;
+  let i;
 
-  content = document.getElementsByClassName("content");
-  for (i = 0; i < content.length; i++) {
-    content[i].style.display = "none";
-  }
+  // Set all the pages display to none
+  Array.from(document.getElementsByClassName("content")).forEach(
+    function(page) {
+        page.style.display = "none";
+    }
+  );
 
-  navitem = document.getElementsByClassName("navitem");
+  // Once a page is selected make it active and display it
+  const navitem = document.getElementsByClassName("navitem");
   for (i = 0; i < navitem.length; i++) {
     navitem[i].className = navitem[i].className.replace(" active", "");
   }
@@ -32,50 +33,46 @@ function openContent(evt, page) {
   document.getElementById(page).style.display = "block";
   evt.currentTarget.className += " active";
 
+  // Select the header and footer
+  const headerElement = document.getElementById("headerSection");
+  const footerElement = document.getElementById("footerSection");
+
+  // If on the about page make the header and footer large otherwise shrink them
   if(page == "about"){
-    let headerElement = document.getElementById("headerSection");
     headerElement.classList.remove("minimise");
     headerElement.classList.add("maximise");
-    let footerElement = document.getElementById("footerSection");
     footerElement.classList.add("maximiseFooter");
     footerElement.classList.remove("minimiseFooter");
   }else{
-    let headerElement = document.getElementById("headerSection");
     headerElement.classList.add("minimise");
     headerElement.classList.remove("maximise");
-    let footerElement = document.getElementById("footerSection");
     footerElement.classList.remove("maximiseFooter");
     footerElement.classList.add("minimiseFooter");
   }
+
+  // When comments page is selected load the comments
+  if (page == "comments"){
+    getComments();
+  }
 }
 
-/**
- * Fetches a my name from the server and adds it to the DOM.
- */
-function getName() {
-  // The fetch() function returns a Promise because the request is asynchronous.
-  const responsePromise = fetch('/data');
+// Fetches data and adds the result to the DOM
+function getComments() {
 
-  // When the request is complete, pass the response into handleResponse().
-  responsePromise.then(handleResponse);
-}
+  fetch('/data').then(response => response.json()).then((comments) => {
+    // Select the table
+    const table = document.getElementById("comment-table");
 
-/**
- * Handles response by converting it to text and passing the result to
- * addNameToDOM().
- */
-function handleResponse(response) {
-  // response.text() returns a Promise, because the response is a stream of
-  // content and not a simple variable.
-  const textPromise = response.text();
+    // For every comment create a new row and fill cells with data
+    comments.forEach((comment) => {
+      let row = table.insertRow(1);
+      let usernameCell = row.insertCell(0);
+      let commentCell = row.insertCell(1);
+      let dateCell = row.insertCell(2);
 
-  // When the response is converted to text, pass the result into the
-  // addNameToDOM() function.
-  textPromise.then(addNameToDOM);
-}
-
-/** Adds my name to the DOM. */
-function addNameToDOM(name) {
-  const nameContainer = document.getElementById('name-container');
-  nameContainer.innerText = name;
+      usernameCell.innerHTML = comment.username;
+      commentCell.innerHTML = comment.comment;
+      dateCell.innerHTML = comment.currentDate;
+    })
+  });
 }
