@@ -81,6 +81,7 @@ function getComments() {
             <th>Username</th>
             <th>Comment</th>
             <th>Date</th>
+            <th>Delete Comment</th>
           </tr>`;
 
     // For every comment create a new row and fill cells with data
@@ -89,12 +90,18 @@ function getComments() {
       let usernameCell = row.insertCell(0);
       let commentCell = row.insertCell(1);
       let dateCell = row.insertCell(2);
+      let deleteCell = row.insertCell(3);
+      let deleteForm = `
+        <form action="/delete-data" method="POST">
+          <input type="hidden" id="userId" name="userId" value="${comment.id}">
+          <input type="submit" value="Delete">
+        </form>
+      `
 
       usernameCell.innerHTML = comment.username;
       commentCell.innerHTML = comment.comment;
       dateCell.innerHTML = comment.currentDate;
+      deleteCell.innerHTML = deleteForm;
     })
   });
 }
-
-
