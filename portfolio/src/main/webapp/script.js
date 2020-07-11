@@ -58,10 +58,20 @@ function openContent(evt, page) {
 
 // Fetches data and adds the result to the DOM
 function getComments() {
-
-  fetch('/data').then(response => response.json()).then((comments) => {
-    // Select the table
+  // Get users preference for max comments results
+  let numResults = document.getElementById("results").value;
+  if (numResults == ""){
+    numResults = 5;
+  }
+  fetch(`/data?results=${numResults}`).then(response => response.json()).then((comments) => {
+    // Select the table and empty it
     const table = document.getElementById("comment-table");
+    table.innerHTML = `
+          <tr>
+            <th>Username</th>
+            <th>Comment</th>
+            <th>Date</th>
+          </tr>`;
 
     // For every comment create a new row and fill cells with data
     comments.forEach((comment) => {

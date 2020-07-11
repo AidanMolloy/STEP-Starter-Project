@@ -30,6 +30,7 @@ import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.datastore.*;
 
 /** Servlet that handles comment data. */
 @WebServlet("/data")
@@ -69,7 +70,11 @@ public class DataServlet extends HttpServlet {
   // Print the comments data to /data
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Create query for Comments sorted by date
+    // How many results does the user want
+    String commentResults = getParameter(request, "results", "5");
+    int numResults = Integer.parseInt(commentResults.trim());
+
+    // Create query for Comments sorted by newest first
     Query query = new Query("Comment").addSort("date", SortDirection.DESCENDING);
 
     // Get all entities from datastore with that query
@@ -78,7 +83,12 @@ public class DataServlet extends HttpServlet {
 
     // Convert data into List of Comments
     List<Comments> comments = new ArrayList<>();
+    int counter = 1;
     for (Entity entity : results.asIterable()) {
+      // Send back amount of results requested
+      if (counter > numResults) {
+        break;
+      }
       long id = entity.getKey().getId();
       String username = (String) entity.getProperty("username");
       String comment = (String) entity.getProperty("comment");
@@ -86,6 +96,7 @@ public class DataServlet extends HttpServlet {
 
       Comments commentResult = new Comments(id, username, comment, date);
       comments.add(commentResult);
+      counter++;
     }
 
     // Convert Comments into JSON and write to /data
