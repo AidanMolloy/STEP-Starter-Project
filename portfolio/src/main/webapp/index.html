@@ -26,7 +26,7 @@
         <button class="navitem" onclick="openContent(event, 'experience')">Experience</button>
         <button class="navitem" onclick="openContent(event, 'achievements')">Achievements</button>
         <button class="navitem" onclick="openContent(event, 'portfolio')">Portfolio</button>
-        <button class="navitem" onclick="openContent(event, 'comments')">Comments</button>
+        <button class="navitem" onclick="openContent(event, 'comments')" id="commentsOpen">Comments</button>
       </div>
     </nav>
     <main class="container">
@@ -236,6 +236,7 @@
         </table>
         <label for="results">How many results:</label><br>
         <textarea name="results" id="results" rows="1" cols="5" onchange="getComments()">5</textarea><br>
+        <button type="button" id="deleteBtn" name="deleteBtn">Delete</button>
       </div>
     </main>
     <footer id="footerSection">
@@ -248,9 +249,12 @@
       <small>&copy; Aidan Molloy 2020</small>
     </footer>
     
-    <!-- Load Home Content -->
+    <!-- Load Home content or Comments content based on query -->
     <script>
       document.getElementById("defaultOpen").click();
+      if (getParameterByName('page') == "comments" ) {
+        document.getElementById("commentsOpen").click();
+      }
     </script>
   </body>
 </html>
