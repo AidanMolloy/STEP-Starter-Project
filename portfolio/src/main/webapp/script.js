@@ -122,16 +122,23 @@ function authenticate() {
     if (authenticated.email) {
       userInfo.innerHTML = "Hello, " + authenticated.email + ", would you like to leave a comment?";
       logInOut.innerHTML = `<a href="${authenticated.logoutUrl}">Logout</a>`;
+      showCommentForm(authenticated.email);
     } else {
-      hideCommentForm()
       userInfo.innerHTML = "Please login to leave a comment.";
       logInOut.innerHTML = `<a href="${authenticated.loginUrl}">Login</a>`;
     }
   });
 }
 
-// By default hide comment form
-function hideCommentForm() {
+// Show comment form
+function showCommentForm(email) {
     commentForm = document.getElementById("commentForm");
-    commentForm.style.display = "none";
+    commentForm.innerHTML =  `
+      <input type="hidden" id="username" name="username" value="${email}">
+      <label for="comment">Comment:</label><br>
+      <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea>
+      <br>
+
+      <input type="submit" />
+    `;
 }
