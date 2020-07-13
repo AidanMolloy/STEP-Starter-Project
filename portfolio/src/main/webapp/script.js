@@ -66,8 +66,8 @@ function openContent(evt, page) {
   }
 }
 
+// Get users preference for max comments results
 function getNumResults() {
-  // Get users preference for max comments results
   let numResults = document.getElementById("results").value;
   if (numResults == ""){
     numResults = 5;
@@ -111,4 +111,10 @@ function getComments(numResults) {
       deleteCell.innerHTML = deleteForm;
     })
   });
+}
+
+// By default hide comment form
+function hideCommentForm() {
+    commentForm = document.getElementsByClassName("content")
+    commentForm.style.display = "none";
 }
