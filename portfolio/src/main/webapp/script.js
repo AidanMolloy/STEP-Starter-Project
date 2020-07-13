@@ -113,8 +113,25 @@ function getComments(numResults) {
   });
 }
 
+// Authenticate user
+function authenticate() {
+  userInfo = document.getElementById("userInfo");
+  logInOut = document.getElementById("logInOut");
+  fetch(`/auth`).then(response => response.json()).then((authenticated) => {
+    // Let user leave a comment if they are logged in.
+    if (authenticated.email) {
+      userInfo.innerHTML = "Hello, " + authenticated.email + ", would you like to leave a comment?";
+      logInOut.innerHTML = `<a href="${authenticated.logoutUrl}">Logout</a>`;
+    } else {
+      hideCommentForm()
+      userInfo.innerHTML = "Please login to leave a comment.";
+      logInOut.innerHTML = `<a href="${authenticated.loginUrl}">Login</a>`;
+    }
+  });
+}
+
 // By default hide comment form
 function hideCommentForm() {
-    commentForm = document.getElementsByClassName("content")
+    commentForm = document.getElementById("commentForm");
     commentForm.style.display = "none";
 }
