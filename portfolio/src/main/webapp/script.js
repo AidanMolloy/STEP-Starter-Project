@@ -12,6 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Get query from URL to activate correct page
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
 
 // Displays selected content
 function openContent(evt, page) {
@@ -71,6 +81,7 @@ function getComments() {
             <th>Username</th>
             <th>Comment</th>
             <th>Date</th>
+            <th>Delete Comment</th>
           </tr>`;
 
     // For every comment create a new row and fill cells with data
@@ -79,10 +90,18 @@ function getComments() {
       let usernameCell = row.insertCell(0);
       let commentCell = row.insertCell(1);
       let dateCell = row.insertCell(2);
+      let deleteCell = row.insertCell(3);
+      let deleteForm = `
+        <form action="/delete-data" method="POST">
+          <input type="hidden" id="userId" name="userId" value="${comment.id}">
+          <input type="submit" value="Delete">
+        </form>
+      `
 
       usernameCell.innerHTML = comment.username;
       commentCell.innerHTML = comment.comment;
       dateCell.innerHTML = comment.currentDate;
+      deleteCell.innerHTML = deleteForm;
     })
   });
 }

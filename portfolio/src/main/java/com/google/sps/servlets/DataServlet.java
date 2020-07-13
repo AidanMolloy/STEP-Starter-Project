@@ -54,8 +54,8 @@ public class DataServlet extends HttpServlet {
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
 
-    // Redirect user once comment added TODO: Redirect to Comments tab.
-    response.sendRedirect("/index.html#comments");
+    // Redirect user once comment added
+    response.sendRedirect("/index.html?page=comments");
   }
 
   // Get data from the form
