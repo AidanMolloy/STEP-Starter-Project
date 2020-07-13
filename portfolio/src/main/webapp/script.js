@@ -62,17 +62,22 @@ function openContent(evt, page) {
 
   // When comments page is selected load the comments
   if (page == "comments"){
-    getComments();
+    getComments(getNumResults());
   }
 }
 
-// Fetches data and adds the result to the DOM
-function getComments() {
+function getNumResults() {
   // Get users preference for max comments results
   let numResults = document.getElementById("results").value;
   if (numResults == ""){
     numResults = 5;
   }
+
+  return numResults;
+}
+
+// Fetches data and adds the result to the DOM
+function getComments(numResults) {
   fetch(`/data?results=${numResults}`).then(response => response.json()).then((comments) => {
     // Select the table and empty it
     const table = document.getElementById("comment-table");
@@ -85,6 +90,8 @@ function getComments() {
           </tr>`;
 
     // For every comment create a new row and fill cells with data
+    // Reversed to show newest first
+    comments.reverse();
     comments.forEach((comment) => {
       let row = table.insertRow(1);
       let usernameCell = row.insertCell(0);
