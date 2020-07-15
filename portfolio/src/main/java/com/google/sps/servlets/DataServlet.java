@@ -36,7 +36,10 @@ import com.google.appengine.api.datastore.*;
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
-  // Gets data from form and puts it in the datastore
+  /**
+   * The doPost function gets data from comment form. Creates Entity from data.
+   * Stores the entity into datastore.
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get the input from the form.
@@ -49,25 +52,24 @@ public class DataServlet extends HttpServlet {
     commentEntity.setProperty("username", username);
     commentEntity.setProperty("comment", comment);
     commentEntity.setProperty("date", currentDate);
+    commentEntity.setProperty("id", commentEntity.getKey().getId());
 
     // Enter the comment into the datastore
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);
 
+    // Output what was sent to datastore for testing purposes
+    Gson gson = new Gson();
+    response.setContentType("application/json");
+    response.getWriter().println(gson.toJson(commentEntity));
+
     // Redirect user once comment added
     response.sendRedirect("/index.html?page=comments");
   }
 
-  // Get data from the form
-  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
-    String value = request.getParameter(name);
-    if (value == null) {
-      return defaultValue;
-    }
-    return value;
-  }
-
-  // Print the comments data to /data
+  /**
+   * The doGet function prints the comments data to /data.
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // How many results does the user want
@@ -103,6 +105,15 @@ public class DataServlet extends HttpServlet {
     String json = convertToJson(comments);
     response.setContentType("application/json;");
     response.getWriter().println(json);
+  }
+
+  // Get data from the form
+  private String getParameter(HttpServletRequest request, String name, String defaultValue) {
+    String value = request.getParameter(name);
+    if (value == null) {
+      return defaultValue;
+    }
+    return value;
   }
 
   
