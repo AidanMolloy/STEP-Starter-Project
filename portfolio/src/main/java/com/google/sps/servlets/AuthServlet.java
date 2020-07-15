@@ -21,6 +21,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.google.gson.Gson;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -32,27 +35,41 @@ public class AuthServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Set response header
-    response.setContentType("text/html");
+    response.setContentType("application/json;");
 
     // Reference to UserService
     UserService userService = UserServiceFactory.getUserService();
+    Map<String, String> authResponse = new HashMap<String, String>();
+
 
     // Check if user is logged
     if (userService.isUserLoggedIn()) {
       String userEmail = userService.getCurrentUser().getEmail();
-      String urlToRedirectToAfterUserLogsOut = "/auth";
+      String urlToRedirectToAfterUserLogsOut = "/index.html?page=comments";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
 
-      // Respond with logged in message
-      response.getWriter().println("<p>Hello " + userEmail + "!</p>");
-      response.getWriter().println("<p>Logout <a href=\"" + logoutUrl + "\">here</a>.</p>");
+      authResponse.put("email", userEmail);
+      authResponse.put("logoutUrl", logoutUrl);
+
+      // Convert into JSON and write to /auth
+      String json = convertToJson(authResponse);
+      response.getWriter().println(json);
     } else {
-      String urlToRedirectToAfterUserLogsIn = "/auth";
+      String urlToRedirectToAfterUserLogsIn = "/index.html?page=comments";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
 
-      // Respond with logged out message
-      response.getWriter().println("<p>Hello stranger.</p>");
-      response.getWriter().println("<p>Login <a href=\"" + loginUrl + "\">here</a>.</p>");
+      authResponse.put("email", "");
+      authResponse.put("loginUrl", loginUrl);
+
+      // Convert into JSON and write to /auth
+      String json = convertToJson(authResponse);
+      response.getWriter().println(json);
     }
+  }
+  // Convert into a JSON string using the Gson library.
+  private String convertToJson(Map<String, String> authResponse) {
+    Gson gson = new Gson();
+    String json = gson.toJson(authResponse);
+    return json;
   }
 }

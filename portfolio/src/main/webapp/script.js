@@ -66,8 +66,8 @@ function openContent(evt, page) {
   }
 }
 
+// Get users preference for max comments results
 function getNumResults() {
-  // Get users preference for max comments results
   let numResults = document.getElementById("results").value;
   if (numResults == ""){
     numResults = 5;
@@ -111,4 +111,34 @@ function getComments(numResults) {
       deleteCell.innerHTML = deleteForm;
     })
   });
+}
+
+// Authenticate user
+function authenticate() {
+  userInfo = document.getElementById("userInfo");
+  logInOut = document.getElementById("logInOut");
+  fetch(`/auth`).then(response => response.json()).then((authenticated) => {
+    // Let user leave a comment if they are logged in.
+    if (authenticated.email) {
+      userInfo.innerHTML = "Hello, " + authenticated.email + ", would you like to leave a comment?";
+      logInOut.innerHTML = `<a href="${authenticated.logoutUrl}">Logout</a>`;
+      showCommentForm(authenticated.email);
+    } else {
+      userInfo.innerHTML = "Please login to leave a comment.";
+      logInOut.innerHTML = `<a href="${authenticated.loginUrl}">Login</a>`;
+    }
+  });
+}
+
+// Show comment form
+function showCommentForm(email) {
+    commentForm = document.getElementById("commentForm");
+    commentForm.innerHTML =  `
+      <input type="hidden" id="username" name="username" value="${email}">
+      <label for="comment">Comment:</label><br>
+      <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea>
+      <br>
+
+      <input type="submit" />
+    `;
 }
