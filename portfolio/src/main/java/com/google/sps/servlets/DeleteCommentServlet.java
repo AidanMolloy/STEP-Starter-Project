@@ -31,7 +31,7 @@ public class DeleteCommentServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get ID of comment to be deleted
-    long id = Long.parseLong(request.getParameter("userId"));
+    long id = Long.parseLong(request.getParameter("commentId"));
     
     // Delete comment from datastore
     Key commentEntityKey = KeyFactory.createKey("Comment", id);
