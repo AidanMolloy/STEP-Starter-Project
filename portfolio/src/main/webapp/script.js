@@ -100,7 +100,7 @@ function getComments(numResults) {
       let deleteCell = row.insertCell(3);
       let deleteForm = `
         <form action="/delete-data" method="POST">
-          <input type="hidden" id="userId" name="userId" value="${comment.id}">
+          <input type="hidden" name="commentId" value="${comment.id}">
           <input type="submit" value="Delete">
         </form>
       `
@@ -111,6 +111,7 @@ function getComments(numResults) {
       deleteCell.innerHTML = deleteForm;
     })
   });
+  authenticate();
 }
 
 // Authenticate user
@@ -118,23 +119,30 @@ function authenticate() {
   userInfo = document.getElementById("userInfo");
   logInOut = document.getElementById("logInOut");
   fetch(`/auth`).then(response => response.json()).then((authenticated) => {
-    // Let user leave a comment if they are logged in.
-    if (authenticated.email) {
-      userInfo.innerHTML = "Hello, " + authenticated.email + ", would you like to leave a comment?";
-      logInOut.innerHTML = `<a href="${authenticated.logoutUrl}">Logout</a>`;
-      showCommentForm(authenticated.email);
+    console.log(authenticated);
+    // User can leave a comment if they are logged in and have set a username.
+    if (authenticated.loggedIn == "true") {
+      if (authenticated.username) {
+        userInfo.innerHTML = "Hello, " + authenticated.username + ", would you like to leave a comment?";
+        logInOut.innerHTML = `<a href="${authenticated.logoutUrl}">Logout</a><br><p>Change your username <a href=\"/username\">here</a>.</p>`;
+        showCommentForm(authenticated.username);
+      } else {
+        userInfo.innerHTML = "Please set a username to leave a comment.";
+        logInOut.innerHTML = `<p>Change your username <a href=\"/username\">here</a>.</p>`;
+      }
     } else {
       userInfo.innerHTML = "Please login to leave a comment.";
       logInOut.innerHTML = `<a href="${authenticated.loginUrl}">Login</a>`;
     }
+
   });
 }
 
 // Show comment form
-function showCommentForm(email) {
+function showCommentForm(username) {
     commentForm = document.getElementById("commentForm");
     commentForm.innerHTML =  `
-      <input type="hidden" id="username" name="username" value="${email}">
+      <input type="hidden" id="username" name="username" value="${username}">
       <label for="comment">Comment:</label><br>
       <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea>
       <br>
