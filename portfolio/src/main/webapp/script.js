@@ -59,11 +59,6 @@ function openContent(evt, page) {
     footerElement.classList.remove("maximiseFooter");
     footerElement.classList.add("minimiseFooter");
   }
-
-  // When comments page is selected load the comments
-  if (page == "comments"){
-    getComments(getNumResults());
-  }
 }
 
 // Get users preference for max comments results
@@ -85,6 +80,7 @@ function getComments(numResults) {
           <tr>
             <th>Username</th>
             <th>Comment</th>
+            <th>Image</th>
             <th>Date</th>
             <th>Delete Comment</th>
           </tr>`;
@@ -96,8 +92,9 @@ function getComments(numResults) {
       let row = table.insertRow(1);
       let usernameCell = row.insertCell(0);
       let commentCell = row.insertCell(1);
-      let dateCell = row.insertCell(2);
-      let deleteCell = row.insertCell(3);
+      let imageCell = row.insertCell(2);
+      let dateCell = row.insertCell(3);
+      let deleteCell = row.insertCell(4);
       let deleteForm = `
         <form action="/delete-data" method="POST">
           <input type="hidden" name="commentId" value="${comment.id}">
@@ -107,6 +104,11 @@ function getComments(numResults) {
 
       usernameCell.innerHTML = comment.username;
       commentCell.innerHTML = comment.comment;
+      if (comment.image) {
+        imageCell.innerHTML = `<img width="100px" height="100px" src="${comment.image}"/>`;
+      } else {
+        imageCell.innerHTML = "No image";
+      }
       dateCell.innerHTML = comment.currentDate;
       deleteCell.innerHTML = deleteForm;
     })
@@ -119,7 +121,6 @@ function authenticate() {
   userInfo = document.getElementById("userInfo");
   logInOut = document.getElementById("logInOut");
   fetch(`/auth`).then(response => response.json()).then((authenticated) => {
-    console.log(authenticated);
     // User can leave a comment if they are logged in and have set a username.
     if (authenticated.loggedIn == "true") {
       if (authenticated.username) {
@@ -138,15 +139,32 @@ function authenticate() {
   });
 }
 
-// Show comment form
+// Create comment form with action pointing to blobstore 
 function showCommentForm(username) {
-    commentForm = document.getElementById("commentForm");
-    commentForm.innerHTML =  `
-      <input type="hidden" id="username" name="username" value="${username}">
-      <label for="comment">Comment:</label><br>
-      <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea>
-      <br>
+    let formExists = document.getElementById("comment-form");
+    if (formExists) {
+      formExists.parentNode.removeChild(f);
+    }
+    fetch('/blobstore-upload-url')
+      .then((response) => {
+        return response.text();
+      })
+      .then((imageUploadUrl) => {
+        let commentForm = document.createElement("FORM");
+        commentForm.id = "comment-form";
+        commentForm.action = imageUploadUrl;
+        commentForm.method = "POST";
+        commentForm.enctype = "multipart/form-data";
+        commentForm.innerHTML =  `
+          <input type="hidden" id="username" name="username" value="${username}">
+          <label for="comment">Comment:</label><br>
+          <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea><br>
+          <label for="image">Image: </label>
+          <input type="file" name="image">
+          <br>
 
-      <input type="submit" />
-    `;
+          <input type="submit" />
+        `;
+        document.getElementById("commentFormSection").appendChild(commentForm);
+      });
 }
