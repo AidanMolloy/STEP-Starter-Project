@@ -54,6 +54,8 @@ public class CreateCommentServlet extends HttpServlet {
    * The doPost function gets data from comment form. Creates Entity from data.
    * Stores the entity into datastore.
    */
+
+  private BlobstoreService blobstoreService = BlobstoreServiceFactory.getBlobstoreService();
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -64,8 +66,15 @@ public class CreateCommentServlet extends HttpServlet {
     // Get the comment
     String comment = getParameter(request, "comment", "");
 
-    // Get the URL of the image that the user uploaded to Blobstore.
-    String imageUrl = getUploadedFileUrl(request, "image");
+    Map<String, List<BlobKey>> blobs = blobstoreService.getUploads(request);
+    List<BlobKey> blobKeys = blobs.get("image");
+
+    String imageUrl = "";
+    if (blobKeys == null || blobKeys.isEmpty()) {
+      imageUrl = "";
+    } else {
+      imageUrl = "/serve?blob-key=" + blobKeys.get(0).getKeyString();
+    }
 
     // Get current date
     Date currentDate = new Date();
