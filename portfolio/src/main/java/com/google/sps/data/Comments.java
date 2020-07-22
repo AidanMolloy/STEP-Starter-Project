@@ -16,7 +16,7 @@ package com.google.sps.data;
 
 import java.util.Date;
 
-/** Creates comments from from received data. */
+/** Comment class */
 public final class Comments {
 
   private final long id;

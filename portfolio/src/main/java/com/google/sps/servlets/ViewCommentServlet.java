@@ -17,7 +17,6 @@ package com.google.sps.servlets;
 import com.google.sps.data.Comments;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,33 +27,17 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.*;
-import com.google.appengine.api.blobstore.BlobInfo;
-import com.google.appengine.api.blobstore.BlobInfoFactory;
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.images.ImagesService;
-import com.google.appengine.api.images.ImagesServiceFactory;
-import com.google.appengine.api.images.ServingUrlOptions;
-import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Date;
 
 /** 
- * Servlet that handles comment data. 
- * Blobstore processes the file upload and then forwards the request
- * to this servlet. This servlet can then process the request using the file URL we get from
- * Blobstore.
+ * Servlet that gets comment data.
  */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
+@WebServlet("/view-comments")
+public class ViewCommentServlet extends HttpServlet {
   /**
-   * The doGet function prints the comments data to /data.
+   * The doGet function prints the comments data to /view-comments.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {

@@ -28,9 +28,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * Servlet to change usernames linked with specific emails
+ */
 @WebServlet("/username")
 public class UsernameServlet extends HttpServlet {
 
+  /**
+   * doGet prints form to page for changing username
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("text/html");
@@ -52,6 +58,10 @@ public class UsernameServlet extends HttpServlet {
     }
   }
 
+  /**
+   * doPost process the information from the form links the new username to 
+   * the associated logged in email
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     UserService userService = UserServiceFactory.getUserService();

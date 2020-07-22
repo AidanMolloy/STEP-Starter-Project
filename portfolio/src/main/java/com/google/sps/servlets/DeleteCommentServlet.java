@@ -24,7 +24,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-/** Servlet that deletes comment data. **/
+/** 
+ * Servlet that deletes specific comments based on the passed ID. 
+ */
 @WebServlet("/delete-data")
 public class DeleteCommentServlet extends HttpServlet {
 

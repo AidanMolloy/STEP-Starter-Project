@@ -29,11 +29,6 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.*;
-
 
 /**
  * The auth servlet is responsible for authenticating users.
@@ -56,27 +51,23 @@ public class AuthServlet extends HttpServlet {
       String urlToRedirectToAfterUserLogsOut = "/index.html?page=comments";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
 
-      // If user has not set a nickname, redirect to nickname page
+      // If user has not set a username, redirect to username page
       String username = getUsername(userService.getCurrentUser().getUserId());
 
       authResponse.put("loggedIn", "true");
       authResponse.put("username", username);
       authResponse.put("logoutUrl", logoutUrl);
-
-      // Convert into JSON and write to /auth
-      String json = convertToJson(authResponse);
-      response.getWriter().println(json);
     } else {
       String urlToRedirectToAfterUserLogsIn = "/index.html?page=comments";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
 
       authResponse.put("loggedIn", "false");
       authResponse.put("loginUrl", loginUrl);
-
-      // Convert into JSON and write to /auth
-      String json = convertToJson(authResponse);
-      response.getWriter().println(json);
     }
+
+    // Convert into JSON and write to /auth
+    String json = convertToJson(authResponse);
+    response.getWriter().println(json);
   }
 
   /** 
