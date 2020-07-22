@@ -17,7 +17,6 @@ package com.google.sps.servlets;
 import com.google.sps.data.Comments;
 import com.google.gson.Gson;
 import java.io.IOException;
-import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,47 +27,17 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
-import com.google.appengine.api.datastore.Key;
-import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.datastore.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
 
-/** Servlet that handles comment data. */
-@WebServlet("/data")
-public class DataServlet extends HttpServlet {
-
+/** 
+ * Servlet that gets comment data.
+ */
+@WebServlet("/view-comments")
+public class ViewCommentServlet extends HttpServlet {
   /**
-   * The doPost function gets data from comment form. Creates Entity from data.
-   * Stores the entity into datastore.
-   */
-  @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    // Get the input from the form.
-    String username = getParameter(request, "username", "");
-    String comment = getParameter(request, "comment", "");
-    Date currentDate = new Date();
-
-    // Create Entity for the comment data
-    Entity commentEntity = new Entity("Comment");
-    commentEntity.setProperty("username", username);
-    commentEntity.setProperty("comment", comment);
-    commentEntity.setProperty("date", currentDate);
-    commentEntity.setProperty("id", commentEntity.getKey().getId());
-
-    // Enter the comment into the datastore
-    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-    datastore.put(commentEntity);
-
-    // Output what was sent to datastore for testing purposes
-    Gson gson = new Gson();
-    response.setContentType("application/json");
-    response.getWriter().println(gson.toJson(commentEntity));
-
-    // Redirect user once comment added
-    response.sendRedirect("/index.html?page=comments");
-  }
-
-  /**
-   * The doGet function prints the comments data to /data.
+   * The doGet function prints the comments data to /view-comments.
    */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -94,9 +63,10 @@ public class DataServlet extends HttpServlet {
       long id = entity.getKey().getId();
       String username = (String) entity.getProperty("username");
       String comment = (String) entity.getProperty("comment");
+      String image = (String) entity.getProperty("image");
       Date date = (Date) entity.getProperty("date");
 
-      Comments commentResult = new Comments(id, username, comment, date);
+      Comments commentResult = new Comments(id, username, comment, image, date);
       comments.add(commentResult);
       counter++;
     }
@@ -115,7 +85,6 @@ public class DataServlet extends HttpServlet {
     }
     return value;
   }
-
   
   // Converts comments into a JSON string using the Gson library.
   private String convertToJson(List<Comments> comments) {

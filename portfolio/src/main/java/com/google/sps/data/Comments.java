@@ -16,18 +16,20 @@ package com.google.sps.data;
 
 import java.util.Date;
 
-/** Creates comments from from received data. */
+/** Comment class */
 public final class Comments {
 
   private final long id;
   private final String username;
   private final String comment;
+  private final String image;
   private final Date currentDate;
 
-  public Comments(long id, String username, String comment, Date currentDate) {
+  public Comments(long id, String username, String comment, String image, Date currentDate) {
     this.id = id;
     this.username = username;
     this.comment = comment;
+    this.image = image;
     this.currentDate = currentDate;
   }
 
@@ -41,6 +43,10 @@ public final class Comments {
 
   public String getComment() {
     return comment;
+  }
+
+  public String getImage() {
+    return image;
   }
 
   public Date getCurrentDate() {

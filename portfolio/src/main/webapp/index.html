@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <script src="script.js"></script>
   </head>
-  <body onload="authenticate()">
+  <body onload="getComments(getNumResults())">
     <header id="headerSection">
       <div class="container">
         <div id="headerImg">
@@ -224,8 +224,8 @@
         <h2>Comments</h2>
         <p id="userInfo"></p>
         <p id="logInOut"></p>
-        <form id="commentForm" action="/data" method="POST">
-        </form>
+        <div id="commentFormSection">
+        </div>
         <table id="comment-table">
         </table>
         <label for="results">How many results:</label><br>

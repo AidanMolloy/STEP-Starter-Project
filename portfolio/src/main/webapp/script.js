@@ -12,17 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Get query from URL to activate correct page
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-}
-
 // Displays selected content
 function openContent(evt, page) {
   let i;
@@ -59,11 +48,6 @@ function openContent(evt, page) {
     footerElement.classList.remove("maximiseFooter");
     footerElement.classList.add("minimiseFooter");
   }
-
-  // When comments page is selected load the comments
-  if (page == "comments"){
-    getComments(getNumResults());
-  }
 }
 
 // Get users preference for max comments results
@@ -72,19 +56,19 @@ function getNumResults() {
   if (numResults == ""){
     numResults = 5;
   }
-
   return numResults;
 }
 
 // Fetches data and adds the result to the DOM
 function getComments(numResults) {
-  fetch(`/data?results=${numResults}`).then(response => response.json()).then((comments) => {
+  fetch(`/view-comments?results=${numResults}`).then(response => response.json()).then((comments) => {
     // Select the table and empty it
     const table = document.getElementById("comment-table");
     table.innerHTML = `
           <tr>
             <th>Username</th>
             <th>Comment</th>
+            <th>Image</th>
             <th>Date</th>
             <th>Delete Comment</th>
           </tr>`;
@@ -96,21 +80,27 @@ function getComments(numResults) {
       let row = table.insertRow(1);
       let usernameCell = row.insertCell(0);
       let commentCell = row.insertCell(1);
-      let dateCell = row.insertCell(2);
-      let deleteCell = row.insertCell(3);
+      let imageCell = row.insertCell(2);
+      let dateCell = row.insertCell(3);
+      let deleteCell = row.insertCell(4);
       let deleteForm = `
         <form action="/delete-data" method="POST">
-          <input type="hidden" id="userId" name="userId" value="${comment.id}">
+          <input type="hidden" name="commentId" value="${comment.id}">
           <input type="submit" value="Delete">
         </form>
       `
-
       usernameCell.innerHTML = comment.username;
       commentCell.innerHTML = comment.comment;
+      if (comment.image) {
+        imageCell.innerHTML = `<img width="100px" height="100px" src="${comment.image}"/>`;
+      } else {
+        imageCell.innerHTML = "No image";
+      }
       dateCell.innerHTML = comment.currentDate;
       deleteCell.innerHTML = deleteForm;
     })
   });
+  authenticate();
 }
 
 // Authenticate user
@@ -118,27 +108,61 @@ function authenticate() {
   userInfo = document.getElementById("userInfo");
   logInOut = document.getElementById("logInOut");
   fetch(`/auth`).then(response => response.json()).then((authenticated) => {
-    // Let user leave a comment if they are logged in.
-    if (authenticated.email) {
-      userInfo.innerHTML = "Hello, " + authenticated.email + ", would you like to leave a comment?";
-      logInOut.innerHTML = `<a href="${authenticated.logoutUrl}">Logout</a>`;
-      showCommentForm(authenticated.email);
+    // User can leave a comment if they are logged in and have set a username.
+    if (authenticated.loggedIn == "true") {
+      if (authenticated.username) {
+        userInfo.innerHTML = "Hello, " + authenticated.username + ", would you like to leave a comment?";
+        logInOut.innerHTML = `<a href="${authenticated.logoutUrl}">Logout</a><br><p>Change your username <a href=\"/username\">here</a>.</p>`;
+        showCommentForm(authenticated.username);
+      } else {
+        userInfo.innerHTML = "Please set a username to leave a comment.";
+        logInOut.innerHTML = `<p>Change your username <a href=\"/username\">here</a>.</p>`;
+      }
     } else {
       userInfo.innerHTML = "Please login to leave a comment.";
       logInOut.innerHTML = `<a href="${authenticated.loginUrl}">Login</a>`;
     }
+
   });
 }
 
-// Show comment form
-function showCommentForm(email) {
-    commentForm = document.getElementById("commentForm");
-    commentForm.innerHTML =  `
-      <input type="hidden" id="username" name="username" value="${email}">
-      <label for="comment">Comment:</label><br>
-      <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea>
-      <br>
+// Create comment form with action pointing to blobstore 
+function showCommentForm(username) {
+  let formExists = document.getElementById("comment-form");
+  if (formExists) {
+    formExists.parentNode.removeChild(f);
+  }
+  fetch('/blobstore-upload-url')
+    .then((response) => {
+      return response.text();
+    })
+    .then((imageUploadUrl) => {
+      let commentForm = document.createElement("FORM");
+      commentForm.id = "comment-form";
+      commentForm.action = imageUploadUrl;
+      commentForm.method = "POST";
+      commentForm.enctype = "multipart/form-data";
+      commentForm.innerHTML =  `
+        <input type="hidden" id="username" name="username" value="${username}">
+        <label for="comment">Comment:</label><br>
+        <textarea id="comment" name="comment" placeholder="Enter your comment here..." rows="4" cols="50"></textarea><br>
+        <label for="image">Image: </label>
+        <input type="file" name="image">
+        <br>
 
-      <input type="submit" />
-    `;
+        <input type="submit" />
+      `;
+      document.getElementById("commentFormSection").appendChild(commentForm);
+    });
+}
+
+// Get query from URL to activate correct page
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }

@@ -24,14 +24,16 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 
-/** Servlet that deletes comment data. **/
+/** 
+ * Servlet that deletes specific comments based on the passed ID. 
+ */
 @WebServlet("/delete-data")
 public class DeleteCommentServlet extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Get ID of comment to be deleted
-    long id = Long.parseLong(request.getParameter("userId"));
+    long id = Long.parseLong(request.getParameter("commentId"));
     
     // Delete comment from datastore
     Key commentEntityKey = KeyFactory.createKey("Comment", id);

@@ -24,7 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 
 /**
  * The auth servlet is responsible for authenticating users.
@@ -44,28 +48,45 @@ public class AuthServlet extends HttpServlet {
 
     // Check if user is logged
     if (userService.isUserLoggedIn()) {
-      String userEmail = userService.getCurrentUser().getEmail();
       String urlToRedirectToAfterUserLogsOut = "/index.html?page=comments";
       String logoutUrl = userService.createLogoutURL(urlToRedirectToAfterUserLogsOut);
 
-      authResponse.put("email", userEmail);
-      authResponse.put("logoutUrl", logoutUrl);
+      // If user has not set a username, redirect to username page
+      String username = getUsername(userService.getCurrentUser().getUserId());
 
-      // Convert into JSON and write to /auth
-      String json = convertToJson(authResponse);
-      response.getWriter().println(json);
+      authResponse.put("loggedIn", "true");
+      authResponse.put("username", username);
+      authResponse.put("logoutUrl", logoutUrl);
     } else {
       String urlToRedirectToAfterUserLogsIn = "/index.html?page=comments";
       String loginUrl = userService.createLoginURL(urlToRedirectToAfterUserLogsIn);
 
-      authResponse.put("email", "");
+      authResponse.put("loggedIn", "false");
       authResponse.put("loginUrl", loginUrl);
-
-      // Convert into JSON and write to /auth
-      String json = convertToJson(authResponse);
-      response.getWriter().println(json);
     }
+
+    // Convert into JSON and write to /auth
+    String json = convertToJson(authResponse);
+    response.getWriter().println(json);
   }
+
+  /** 
+   * Returns the username of the user with id, or null if the user has not set a nickname. 
+   */
+  private String getUsername(String id) {
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    Query query =
+        new Query("UserInfo")
+            .setFilter(new Query.FilterPredicate("id", Query.FilterOperator.EQUAL, id));
+    PreparedQuery results = datastore.prepare(query);
+    Entity entity = results.asSingleEntity();
+    if (entity == null) {
+      return null;
+    }
+    String username = (String) entity.getProperty("username");
+    return username;
+  }
+
   // Convert into a JSON string using the Gson library.
   private String convertToJson(Map<String, String> authResponse) {
     Gson gson = new Gson();
